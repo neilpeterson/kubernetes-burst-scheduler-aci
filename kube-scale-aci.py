@@ -1,9 +1,10 @@
 import json
+import random
 import requests
 import sys
 
 K8S_API = "http://localhost:8001/api/v1/"
-BURST_VALUE = 3
+BURST_VALUE = 5
 ACI_NODE_NAME = "aci-connector"
 
 # FUNCTION - Verify Kubernetes API
@@ -114,10 +115,23 @@ APP_LABELS_UNSCHEDULED = get_app_label()
 # Get avalibale nodes
 NODES = get_nodes()
 
+# This returns [0] the number of scheduled pods, [1] a list of unscheduled pods.
 for APP_LABEL_UNSCHEDULED in APP_LABELS_UNSCHEDULED:
     UNSCHEDULED_PODS = get_pods(APP_LABEL_UNSCHEDULED, NODES)
-    print(UNSCHEDULED_PODS[1])
 
-# Determine proper node (calc burst ++)
+# Determine if ACS nodes should be used. 
+print(UNSCHEDULED_PODS[0])
+if UNSCHEDULED_PODS[0] <= BURST_VALUE:
 
-# Schedule pod on ACI node
+    # Initialize integer to track scheduling.
+    new_int = BURST_VALUE - UNSCHEDULED_PODS[0]
+    
+    # Loop through unscheduled pods and schdule on ACS or ACI.
+    for pod in UNSCHEDULED_PODS[1]:
+        if new_int > 0:
+            print("Schedule on " + random.choice(NODES))
+            schedule_pod(pod, random.choice(NODES))
+            new_int -= 1
+        else:
+            print("Schedule on " + ACI_NODE_NAME)
+            schedule_pod(pod, ACI_NODE_NAME)

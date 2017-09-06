@@ -2,8 +2,8 @@ import json
 import requests
 import sys
 
-pod = 'azure-vote-front-614820086-95dmw'
-node = 'k8s-agentpool1-00427490-0'
+pod = 'azure-vote-front-614820086-kzz5t'
+node = 'aci-connector'
 url = 'http://localhost:8001/api/v1/namespaces/default/pods/' + pod + '/binding'
 
 headers = {'Content-Type': 'application/json'} 

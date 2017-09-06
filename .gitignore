@@ -105,3 +105,4 @@ nepeters.txt
 .DS_Store
 .vscode
 docker-compose.yaml
+aci-connector.yaml
