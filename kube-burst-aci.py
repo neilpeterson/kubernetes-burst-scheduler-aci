@@ -4,7 +4,7 @@ import requests
 import sys
 
 K8S_API = "http://localhost:8001/api/v1/"
-BURST_VALUE = 5
+BURST_VALUE = 2
 ACI_NODE_NAME = "aci-connector"
 
 # FUNCTION - Verify Kubernetes API
