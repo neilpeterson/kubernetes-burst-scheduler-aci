@@ -1,0 +1,95 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job2
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job3
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job4
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job5
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job6
+spec:
+  template:
+    metadata:
+      labels:
+        app: demo-job
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: demo-job
+        image: neilpeterson/kubernetes-job:v1
+      restartPolicy: Never

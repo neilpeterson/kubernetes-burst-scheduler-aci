@@ -4,10 +4,11 @@ import requests
 import sys
 
 K8S_API = "http://localhost:8001/api/v1/"
-BURST_VALUE = 2
+BURST_VALUE = 4
 ACI_NODE_NAME = "aci-connector"
+UNSCHEDULED_PODS = None
 
-# FUNCTION - Verify Kubernetes API
+# Verify Kubernetes API
 def verify_api():
     try:
         requests.get(K8S_API)
@@ -15,10 +16,11 @@ def verify_api():
         print('Could not connect to: ' + K8S_API + ' API. Program will exit.')
         sys.exit(1)
 
-# FUNCTION - Get app labels
+# Get app labels
 # Searches for any unassigned pod that is also assigned the custom scheduler.
 # The app label for this pod is returned.
-# This is needed so that all pods with the common app label can be inventoried.
+# This is needed so that all pods with the common app label can be inventoried and evaluated for burst condition.
+# This does not seem to work for jobs.
 def get_app_label():
 
     APP_LABEL_LIST = []
@@ -39,8 +41,7 @@ def get_app_label():
 
     return APP_LABEL_LIST
 
-# FUNCTION - get all pods with app label
-# Here all pods that match an app label are evaluated for node assignment.
+# Get pods with matching app label
 # If assigned to K8S node, counter is incremented.
 # If not assigned to a node, pod is returned in a list.
 def get_pods(app_label, node_list):
@@ -60,7 +61,7 @@ def get_pods(app_label, node_list):
 
     return COUNT_SCHEDULED_ACS, POD_TO_SCHEDULE
 
-# FUNCTION - Schedule pod
+# Schedule pod
 def schedule_pod(pod, node):
 
     url = 'http://localhost:8001/api/v1/namespaces/default/pods/' + pod + '/binding'
@@ -81,7 +82,7 @@ def schedule_pod(pod, node):
 
     r = requests.post(url, data=json.dumps(payload), headers=headers)
 
-# FUNCTION - Get Nodes
+# Get Nodes
 def get_nodes ():
 
     NODE_LIST = []
@@ -105,33 +106,38 @@ def get_nodes ():
 
     return NODE_LIST
 
+while True:
+    print("Start...")
 
-# Verify API connectivity
-verify_api()
+    # Verify API connectivity
+    verify_api()
 
-# Get list of app labels with unassigned pod with the custom scheduler
-APP_LABELS_UNSCHEDULED = get_app_label()
+    # Get list of app labels with unassigned pod with the custom scheduler
+    APP_LABELS_UNSCHEDULED = get_app_label()
 
-# Get avalibale nodes
-NODES = get_nodes()
+    # Get avalibale nodes
+    NODES = get_nodes()
 
-# This returns [0] the number of scheduled pods, [1] a list of unscheduled pods.
-for APP_LABEL_UNSCHEDULED in APP_LABELS_UNSCHEDULED:
-    UNSCHEDULED_PODS = get_pods(APP_LABEL_UNSCHEDULED, NODES)
+    # This returns [0] the number of scheduled pods, [1] a list of unscheduled pods.
+    for APP_LABEL_UNSCHEDULED in APP_LABELS_UNSCHEDULED:
+        UNSCHEDULED_PODS = get_pods(APP_LABEL_UNSCHEDULED, NODES)
 
-# Determine if ACS nodes should be used. 
-print(UNSCHEDULED_PODS[0])
-if UNSCHEDULED_PODS[0] <= BURST_VALUE:
+    # Determine if ACS nodes should be used.
+    if UNSCHEDULED_PODS:
+        if UNSCHEDULED_PODS[0] <= BURST_VALUE:
 
-    # Initialize integer to track scheduling.
-    new_int = BURST_VALUE - UNSCHEDULED_PODS[0]
-    
-    # Loop through unscheduled pods and schdule on ACS or ACI.
-    for pod in UNSCHEDULED_PODS[1]:
-        if new_int > 0:
-            print("Schedule on " + random.choice(NODES))
-            schedule_pod(pod, random.choice(NODES))
-            new_int -= 1
-        else:
-            print("Schedule on " + ACI_NODE_NAME)
-            schedule_pod(pod, ACI_NODE_NAME)
+            # Initialize integer to track scheduling.
+            new_int = BURST_VALUE - UNSCHEDULED_PODS[0]
+            
+            # Loop through unscheduled pods and schdule on ACS or ACI.
+            for pod in UNSCHEDULED_PODS[1]:
+                if new_int > 0:
+                    print("Schedule on " + random.choice(NODES))
+                    schedule_pod(pod, random.choice(NODES))
+                    new_int -= 1
+                else:
+                    print("Schedule on " + ACI_NODE_NAME)
+                    schedule_pod(pod, ACI_NODE_NAME)
+                    new_int -= 1
+
+    print("End...")
