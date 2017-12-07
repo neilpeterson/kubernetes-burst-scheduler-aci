@@ -1,0 +1,26 @@
+# Custom Resource Controller:
+# Looks for new instances of resource and scales target deployment accordingly.
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: aci-burst-scheduler
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: aci-burst-scheduler
+    spec:
+      containers:
+      - name: kubectl-sidecar
+        image: neilpeterson/kubectl-proxy-sidecar
+      - name: aci-burst-scheduler
+        image: neilpeterson/burst-aci:v1
+        env:
+        - name: K8S_API
+          value: "http://localhost:8001/api/v1/"
+        - name: BURST_VALUE
+          value: "2"
+        - name: ACI_NODE_NAME
+          value: "aci-connector"
