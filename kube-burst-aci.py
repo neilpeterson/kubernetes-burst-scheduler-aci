@@ -1,11 +1,12 @@
+import os
 import json
 import random
 import requests
 import sys
 
-K8S_API = "http://localhost:8001/api/v1/"
-BURST_VALUE = 4
-ACI_NODE_NAME = "aci-connector"
+K8S_API = os.environ['K8S_API']
+BURST_VALUE = int(os.environ['BURST_VALUE'])
+ACI_NODE_NAME = os.environ['ACI_NODE_NAME']
 UNSCHEDULED_PODS = None
 
 # Verify Kubernetes API

@@ -1,8 +1,7 @@
 FROM python
 
-RUN pip install requests && \
-    pip install azure-storage
+RUN pip install requests
 
-ADD ./azure-queue-controller.py /app/azure-queue-controller.py
+ADD ./kube-burst-aci.py /app/kube-burst-aci.py
 
-CMD ["/bin/sh", "-c", "python -u /app/kube-burst-aci.py > kubelog.log 2>&1"]
+CMD (python /app/kube-burst-aci.py)
