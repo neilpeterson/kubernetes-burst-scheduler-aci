@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nepeters
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nepeters
+    spec:
+      schedulerName: test-scheduler
+      containers:
+      - name: nepeters
+        image: neilpeterson/nepetersv1
+        ports:
+        - containerPort: 80
